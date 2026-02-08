@@ -1,0 +1,32 @@
+[package]
+edition = "2021"
+name = "embassy-esp32-examples"
+version = "0.1.0"
+license = "MIT OR Apache-2.0"
+publish = false
+
+# Note: Unlike other examples in this repo, ESP32 dependencies come from crates.io
+# rather than local paths, because the ESP HAL (esp-hal) is maintained externally
+# in the esp-rs project. The embassy crate versions here must match what
+# esp-hal-embassy expects.
+
+[dependencies]
+embassy-executor = { version = "0.7.0", features = ["task-arena-size-20480"] }
+embassy-time = "0.4.0"
+esp-backtrace = { version = "0.15.0", features = ["esp32s3", "exception-handler", "panic-handler", "println"] }
+esp-hal = { version = "0.23.1", features = ["esp32s3"] }
+esp-hal-embassy = { version = "0.6.0", features = ["esp32s3"] }
+esp-println = { version = "0.13.0", features = ["esp32s3", "log"] }
+log = "0.4"
+
+[profile.release]
+debug = 2
+codegen-units = 1
+opt-level = "s"
+lto = "fat"
+overflow-checks = false
+
+[package.metadata.embassy]
+build = [
+  { group = "xtensa", build-std = ["core", "alloc"], target = "xtensa-esp32s3-none-elf", artifact-dir = "out/examples/esp32" }
+]
