@@ -12,15 +12,16 @@ async fn main(_spawner: Spawner) {
     let p = embassy_stm32::init(Default::default());
     info!("Hello World!");
 
-    let mut led = Output::new(p.PA5, Level::High, Speed::Low);
+    // LD3 (red LED) on STM32F3DISCOVERY
+    let mut led = Output::new(p.PE9, Level::High, Speed::Low);
 
     loop {
         info!("high");
         led.set_high();
-        Timer::after_millis(1000).await;
+        Timer::after_millis(250).await;
 
         info!("low");
         led.set_low();
-        Timer::after_millis(1000).await;
+        Timer::after_millis(250).await;
     }
 }
