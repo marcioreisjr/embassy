@@ -44,18 +44,8 @@ use esp_hal::gpio::{Level, Output};
 use esp_hal::timer::timg::TimerGroup;
 use log::*;
 
-#[esp_hal_embassy::main]
-async fn main(_spawner: Spawner) {
-    esp_println::logger::init_logger_from_env();
-    let peripherals = esp_hal::init(esp_hal::Config::default());
-    info!("Hello World!");
-
-    let timg0 = TimerGroup::new(peripherals.TIMG0);
-    esp_hal_embassy::init(timg0.timer0);
-
-    // Heltec LoRa ESP-S3: LED on GPIO35, active high
-    let mut led = Output::new(peripherals.GPIO35, Level::High);
-
+#[embassy_executor::task]
+async fn blink_led(mut led: Output<'static>) {
     loop {
         info!("high");
         led.set_high();
@@ -65,4 +55,18 @@ async fn main(_spawner: Spawner) {
         led.set_low();
         Timer::after(Duration::from_millis(250)).await;
     }
+}
+
+#[esp_hal_embassy::main]
+async fn main(spawner: Spawner) {
+    esp_println::logger::init_logger_from_env();
+    let peripherals = esp_hal::init(esp_hal::Config::default());
+    info!("Hello World!");
+
+    let timg0 = TimerGroup::new(peripherals.TIMG0);
+    esp_hal_embassy::init(timg0.timer0);
+
+    // Heltec LoRa ESP-S3: LED on GPIO35, active high
+    let led = Output::new(peripherals.GPIO35, Level::High);
+    spawner.spawn(blink_led(led)).unwrap();
 }
