@@ -13,3 +13,6 @@ out/
 **/.nvim.lua
 # OS artifacts
 .DS_Store
+**/.cargo
+!**/tests/**/.cargo
+!**/examples/**/.cargo

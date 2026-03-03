@@ -113,6 +113,7 @@ impl Div8 {
 #[non_exhaustive]
 pub struct ClocksConfig {
     /// Power states of VDD Core
+    #[cfg(feature = "mcxa2xx")]
     pub vdd_power: VddPowerConfig,
     /// Clocks that are used to drive the main clock, including the AHB and CPU core
     pub main_clock: MainClockConfig,
@@ -202,7 +203,7 @@ pub enum FlashSleep {
 }
 
 /// Maximum sleep depth for the CPU core
-#[derive(Copy, Clone, Default)]
+#[derive(Copy, Clone, Default, Debug)]
 #[non_exhaustive]
 pub enum CoreSleep {
     /// System will sleep using WFE when idle, but the CPU clock domain will not ever
@@ -492,9 +493,22 @@ impl Default for Fro16KConfig {
     }
 }
 
+impl Default for FircConfig {
+    fn default() -> Self {
+        FircConfig {
+            frequency: FircFreqSel::Mhz45,
+            power: PoweredClock::NormalEnabledDeepSleepDisabled,
+            fro_hf_enabled: true,
+            clk_45m_enabled: true,
+            fro_hf_div: None,
+        }
+    }
+}
+
 impl Default for ClocksConfig {
     fn default() -> Self {
         Self {
+            #[cfg(feature = "mcxa2xx")]
             vdd_power: VddPowerConfig {
                 active_mode: VddModeConfig {
                     level: VddLevel::MidDriveMode,
